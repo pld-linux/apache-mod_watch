@@ -21,7 +21,7 @@ Requires:	apache >= 2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR)
-%define		_sysconfdir	/etc/httpd
+%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR)
 
 %description
 This module will watch and collect the bytes, requests, and documents
