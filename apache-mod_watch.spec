@@ -3,12 +3,13 @@
 Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
-Version:	3.12
+Version:	3.13
 Release:	1
 License:	BSD
 Group:		Networking/Daemons
 Source0:	http://www.snert.com/Software/mod_watch/mod_watch%(echo %{version} | sed -e "s#\.##g").tgz
 Source1:	%{name}.conf
+Patch0:		%{name}-PLD-v6stuff.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
 BuildRequires:	apache(EAPI)-devel
@@ -17,7 +18,6 @@ Requires:	apache(EAPI)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR)
-%define         _sysconfdir     /etc/httpd
 
 %description
 This module will watch and collect the bytes, requests, and documents
@@ -37,36 +37,38 @@ graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
 
 %prep
 %setup -q -n mod_%{mod_name}-%{version}
+%patch -p0
 
 %build
 %{__make} build-dynamic
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}/httpd}
 
 install mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/mod_watch.conf
-
-gzip -9nf CHANGES* apache2mrtg* 
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd/mod_watch.conf
 
 %post
 %{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
-if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*mod_watch.conf" /etc/httpd/httpd.conf; then
-        echo "Include /etc/httpd/mod_watch.conf" >> /etc/httpd/httpd.conf
+if [ -f %{_sysconfdir}/httpd/httpd.conf ] && \
+   ! grep -q "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf; then
+	echo Include %{_sysconfdir}/httpd/mod_watch.conf >> %{_sysconfdir}/httpd/httpd.conf
 fi
 if [ -f /var/lock/subsys/httpd ]; then
-	/etc/rc.d/init.d/httpd restart 1>&2
+	%{_sysconfdir}/rc.d/init.d/httpd restart 1>&2
+else
+	echo "Run \"/etc/rc.d/init.d/httpd start\" to start apache http daemon."
 fi
 
 %preun
 if [ "$1" = "0" ]; then
 	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
-        grep -v "^Include.*mod_watch.conf" /etc/httpd/httpd.conf > \
-                /etc/httpd/httpd.conf.tmp
-        mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
+	grep -v "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf > \
+		%{_sysconfdir}/httpd/httpd.conf.tmp
+	mv -f %{_sysconfdir}/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
-		/etc/rc.d/init.d/httpd restart 1>&2
+		%{_sysconfdir}/rc.d/init.d/httpd restart 1>&2
 	fi
 fi
 
@@ -75,5 +77,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc *.gz *htm
+%doc CHANGES* *.html
 %attr(755,root,root) %{_pkglibdir}/*
+%{_sysconfdir}/httpd/mod_watch.conf
