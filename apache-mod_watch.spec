@@ -1,5 +1,6 @@
 %define		mod_name	watch
 %define 	apxs		/usr/sbin/apxs
+%include	/usr/lib/rpm/macros.perl
 Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
@@ -8,7 +9,7 @@ Release:	1
 License:	BSD
 Group:		Networking/Daemons
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
-# Source0-md5:	89ca8cee3315d8073359d47104583aee
+# Source0-md5:	06d57713adb935f16596d22256bca913
 Source1:	%{name}.conf
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
@@ -39,20 +40,19 @@ Modu³ zosta³ zaprojektowany do pracy z MRTG, dziêki czemu otrzymamy ³adn±,
 graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
 
 %prep
-%setup -q -n mod_%{mod_name}-%{version}
+%setup -q -n mod_%{mod_name}-4.3
 
 %build
-%{__make} build-dynamic
+%{__make} -f Makefile.dso build \
+	APXS=%{apxs}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_bindir},%{_sysconfdir}}
 
-install mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
+install .libs/mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
+install apache2mrtg.pl mod_watch.pl $RPM_BUILD_ROOT%{_bindir}
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/mod_watch.conf
-
-mv mod_watch.html mod_watch_pl.html
-sed -e 's/<!--#/<!--/g' index.shtml > mod_watch.html
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -83,6 +83,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc CHANGES* *.html
+%doc CHANGES* *html *.txt Contrib nfields.pl
+%attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_pkglibdir}/*
 %{_sysconfdir}/mod_watch.conf
