@@ -13,7 +13,9 @@ Patch0:		%{name}-PLD-v6stuff.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
 BuildRequires:	apache(EAPI)-devel
-Prereq:		%{_sbindir}/apxs
+Requires(post,preun):	%{apxs}
+Requires(post,preun):	grep
+Requires(preun):	fileutils
 Requires:	apache(EAPI)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -52,10 +54,13 @@ install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd/mod_watch.conf
 mv mod_watch.html mod_watch_pl.html
 sed -e 's/<!--#/<!--/g' index.shtml > mod_watch.html
 
+%clean
+rm -rf $RPM_BUILD_ROOT
+
 %post
 %{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 if [ -f %{_sysconfdir}/httpd/httpd.conf ] && \
-   ! grep -q "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf; then
+    ! grep -q "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf; then
 	echo Include %{_sysconfdir}/httpd/mod_watch.conf >> %{_sysconfdir}/httpd/httpd.conf
 fi
 if [ -f /var/lock/subsys/httpd ]; then
@@ -67,6 +72,7 @@ fi
 %preun
 if [ "$1" = "0" ]; then
 	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
+	umask 027
 	grep -v "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf > \
 		%{_sysconfdir}/httpd/httpd.conf.tmp
 	mv -f %{_sysconfdir}/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
@@ -74,9 +80,6 @@ if [ "$1" = "0" ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
 fi
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
