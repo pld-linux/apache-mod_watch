@@ -1,0 +1,39 @@
+diff -Naur mod_watch-4.3.orig/mod_watch.c mod_watch-4.3/mod_watch.c
+--- mod_watch-4.3.orig/mod_watch.c	2003-03-13 22:44:27.000000000 +0100
++++ mod_watch-4.3/mod_watch.c	2004-11-18 16:37:10.719093184 +0100
+@@ -258,7 +258,7 @@
+ {
+ 	char *username;
+ 
+-	if (apr_get_username(&username, uid, p) == APR_SUCCESS)
++	if (apr_uid_name_get(&username, uid, p) == APR_SUCCESS)
+ 		return username;
+ 
+ 	return "unknown-user";
+@@ -278,7 +278,7 @@
+ {
+ 	char *groupname;
+ 
+-	if (apr_get_groupname(&groupname, gid, p) == APR_SUCCESS)
++	if (apr_gid_name_get(&groupname, gid, p) == APR_SUCCESS)
+ 		return groupname;
+ 
+ 	return "unknown-group";
+@@ -355,7 +355,7 @@
+ 
+ 	nbytes = sizeof word;
+ 	rc = fileReadWord(fp, word, &nbytes);
+-	if (!APR_STATUS_IS_SUCCESS(rc))
++	if (rc != APR_SUCCESS)
+ 		return rc;
+ 
+ 	return sscanf(word, format, number) == 1 ? APR_SUCCESS : APR_EGENERAL;
+@@ -370,7 +370,7 @@
+ 
+ 	nbytes = sizeof word;
+ 	rc = fileReadWord(fp, word, &nbytes);
+-	if (!APR_STATUS_IS_SUCCESS(rc))
++	if (rc != APR_SUCCESS)
+ 		return rc;
+ 
+ 	return sscanf(word, "%lf", number) == 1 ? APR_SUCCESS : APR_EGENERAL;
