@@ -4,7 +4,7 @@ Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
 Version:	3.13
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Daemons
 Source0:	http://www.snert.com/Software/mod_watch/mod_watch%(echo %{version} | sed -e "s#\.##g").tgz
