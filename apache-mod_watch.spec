@@ -3,24 +3,24 @@
 Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
-Version:	3.13
-Release:	3
+Version:	4.03
+Release:	1
 License:	BSD
 Group:		Networking/Daemons
-Source0:	http://www.snert.com/Software/mod_watch/mod_watch%(echo %{version} | tr -d .).tgz
+Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
 # Source0-md5:	89ca8cee3315d8073359d47104583aee
 Source1:	%{name}.conf
-Patch0:		%{name}-PLD-v6stuff.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
-BuildRequires:	apache(EAPI)-devel
+BuildRequires:	apache-devel >= 2
 Requires(post,preun):	%{apxs}
 Requires(post,preun):	grep
 Requires(preun):	fileutils
-Requires:	apache(EAPI)
+Requires:	apache >= 2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR)
+%define		_sysconfdir	/etc/httpd
 
 %description
 This module will watch and collect the bytes, requests, and documents
@@ -40,17 +40,16 @@ graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
 
 %prep
 %setup -q -n mod_%{mod_name}-%{version}
-%patch -p0
 
 %build
 %{__make} build-dynamic
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}/httpd}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}}
 
 install mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd/mod_watch.conf
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/mod_watch.conf
 
 mv mod_watch.html mod_watch_pl.html
 sed -e 's/<!--#/<!--/g' index.shtml > mod_watch.html
@@ -60,9 +59,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 %{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
-if [ -f %{_sysconfdir}/httpd/httpd.conf ] && \
-    ! grep -q "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf; then
-	echo Include %{_sysconfdir}/httpd/mod_watch.conf >> %{_sysconfdir}/httpd/httpd.conf
+if [ -f %{_sysconfdir}/httpd.conf ] && \
+    ! grep -q "^Include.*mod_watch.conf" %{_sysconfdir}/httpd.conf; then
+	echo "Include %{_sysconfdir}/mod_watch.conf" >> %{_sysconfdir}/httpd.conf
 fi
 if [ -f /var/lock/subsys/httpd ]; then
 	/etc/rc.d/init.d/httpd restart 1>&2
@@ -74,9 +73,9 @@ fi
 if [ "$1" = "0" ]; then
 	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 	umask 027
-	grep -v "^Include.*mod_watch.conf" %{_sysconfdir}/httpd/httpd.conf > \
-		%{_sysconfdir}/httpd/httpd.conf.tmp
-	mv -f %{_sysconfdir}/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
+	grep -v "^Include.*mod_watch.conf" %{_sysconfdir}/httpd.conf > \
+		%{_sysconfdir}/httpd.conf.tmp
+	mv -f %{_sysconfdir}/httpd.conf.tmp %{_sysconfdir}/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
@@ -86,4 +85,4 @@ fi
 %defattr(644,root,root,755)
 %doc CHANGES* *.html
 %attr(755,root,root) %{_pkglibdir}/*
-%{_sysconfdir}/httpd/mod_watch.conf
+%{_sysconfdir}/mod_watch.conf
