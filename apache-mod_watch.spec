@@ -62,7 +62,7 @@ fi
 %preun
 if [ "$1" = "0" ]; then
 	%{_sbindir}/apxs -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
-        grep -v -q "^Include.*mod_watch.conf" /etc/httpd/httpd.conf > \
+        grep -v "^Include.*mod_watch.conf" /etc/httpd/httpd.conf > \
                 /etc/httpd/httpd.conf.tmp
         mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
