@@ -59,7 +59,7 @@ if [ -f %{_sysconfdir}/httpd/httpd.conf ] && \
 	echo Include %{_sysconfdir}/httpd/mod_watch.conf >> %{_sysconfdir}/httpd/httpd.conf
 fi
 if [ -f /var/lock/subsys/httpd ]; then
-	%{_sysconfdir}/rc.d/init.d/httpd restart 1>&2
+	/etc/rc.d/init.d/httpd restart 1>&2
 else
 	echo "Run \"/etc/rc.d/init.d/httpd start\" to start apache http daemon."
 fi
@@ -71,7 +71,7 @@ if [ "$1" = "0" ]; then
 		%{_sysconfdir}/httpd/httpd.conf.tmp
 	mv -f %{_sysconfdir}/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
-		%{_sysconfdir}/rc.d/init.d/httpd restart 1>&2
+		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
 fi
 
