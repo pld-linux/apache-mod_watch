@@ -5,16 +5,17 @@ Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Daemons
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
 # Source0-md5:	06d57713adb935f16596d22256bca913
 Source1:	%{name}.conf
+Patch0:		%{name}-apr-fix.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
 BuildRequires:	apache-devel >= 2
-Requires(post,preun):	%{apxs}
+#Requires(post,preun):	%{apxs}
 Requires(post,preun):	grep
 Requires(preun):	fileutils
 Requires:	apache >= 2
@@ -41,6 +42,7 @@ graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
 
 %prep
 %setup -q -n mod_%{mod_name}-4.3
+%patch0 -p1
 
 %build
 %{__make} -f Makefile.dso build \
@@ -58,7 +60,7 @@ install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/99_mod_watch.conf
 rm -rf $RPM_BUILD_ROOT
 
 %post
-%{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
+#%{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 if [ -f /var/lock/subsys/httpd ]; then
 	/etc/rc.d/init.d/httpd restart 1>&2
 else
@@ -67,7 +69,7 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
+#	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 	umask 027
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
