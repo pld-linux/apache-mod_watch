@@ -5,7 +5,7 @@ Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Daemons
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
@@ -48,21 +48,17 @@ graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_bindir},%{_sysconfdir}}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_bindir},%{_sysconfdir}/httpd.conf}
 
 install .libs/mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
 install apache2mrtg.pl mod_watch.pl $RPM_BUILD_ROOT%{_bindir}
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/mod_watch.conf
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/99_mod_watch.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 %{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
-if [ -f %{_sysconfdir}/httpd.conf ] && \
-    ! grep -q "^Include.*mod_watch.conf" %{_sysconfdir}/httpd.conf; then
-	echo "Include %{_sysconfdir}/mod_watch.conf" >> %{_sysconfdir}/httpd.conf
-fi
 if [ -f /var/lock/subsys/httpd ]; then
 	/etc/rc.d/init.d/httpd restart 1>&2
 else
@@ -73,9 +69,6 @@ fi
 if [ "$1" = "0" ]; then
 	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 	umask 027
-	grep -v "^Include.*mod_watch.conf" %{_sysconfdir}/httpd.conf > \
-		%{_sysconfdir}/httpd.conf.tmp
-	mv -f %{_sysconfdir}/httpd.conf.tmp %{_sysconfdir}/httpd.conf
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
@@ -86,4 +79,4 @@ fi
 %doc CHANGES* *html *.txt Contrib nfields.pl
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_pkglibdir}/*
-%{_sysconfdir}/mod_watch.conf
+%{_sysconfdir}/httpd.conf/99_mod_watch.conf
