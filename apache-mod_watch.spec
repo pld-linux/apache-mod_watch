@@ -14,11 +14,10 @@ Source1:	%{name}.conf
 Patch0:		%{name}-apr-fix.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
-BuildRequires:	apache-devel >= 2
-#Requires(post,preun):	%{apxs}
+BuildRequires:	apache-devel >= 2.0.52-2
 Requires(post,preun):	grep
 Requires(preun):	fileutils
-Requires:	apache >= 2
+Requires:	apache >= 2.0.52-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR)
@@ -60,7 +59,6 @@ install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/99_mod_watch.conf
 rm -rf $RPM_BUILD_ROOT
 
 %post
-#%{apxs} -e -a -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 if [ -f /var/lock/subsys/httpd ]; then
 	/etc/rc.d/init.d/httpd restart 1>&2
 else
@@ -69,7 +67,6 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-#	%{apxs} -e -A -n %{mod_name} %{_pkglibdir}/mod_%{mod_name}.so 1>&2
 	umask 027
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
