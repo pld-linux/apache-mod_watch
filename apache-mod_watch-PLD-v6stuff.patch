@@ -1,24 +1,32 @@
---- mod_watch.c	Sun Aug  4 16:10:50 2002
-+++ mod_watch.c.new	Thu Aug 29 21:26:09 2002
-@@ -719,8 +719,8 @@
+--- mod_watch-3.13/mod_watch.c	Sun Aug  4 16:10:50 2002
++++ mod_watch.c	Fri Aug 30 11:51:22 2002
+@@ -719,8 +719,14 @@
  	struct watchConfDir *dconf;
  
  	/* Do not count if the connection is excluded. */
--	if (ntIsMember(networkExcludeList, &r->connection->remote_addr.sin_addr)
--	&& !ntIsMember(networkIncludeList, &r->connection->remote_addr.sin_addr))
-+	if (ntIsMember(networkExcludeList, &((struct sockaddr_in *)&r->connection->remote_addr)->sin_addr)
++#ifdef INET6
++	if (r->connection->remote_addr.ss_family != AF_INET
++	||  ntIsMember(networkExcludeList, &((struct sockaddr_in *)&r->connection->remote_addr)->sin_addr)
 +	&& !ntIsMember(networkIncludeList, &((struct sockaddr_in *)&r->connection->remote_addr)->sin_addr))
++#else
+ 	if (ntIsMember(networkExcludeList, &r->connection->remote_addr.sin_addr)
+ 	&& !ntIsMember(networkIncludeList, &r->connection->remote_addr.sin_addr))
++#endif
  		return DECLINED;
  
  /*	ap_register_cleanup(r->pool, r, watchClean, ap_null_cleanup); */
-@@ -831,8 +831,8 @@
+@@ -831,8 +837,14 @@
  	}
  
  	/* Do not count if the connection is excluded. */
--	if (ntIsMember(networkExcludeList, &r->connection->remote_addr.sin_addr)
--	&& !ntIsMember(networkIncludeList, &r->connection->remote_addr.sin_addr))
-+	if (ntIsMember(networkExcludeList, &((struct sockaddr_in *)&r->connection->remote_addr)->sin_addr)
++#ifdef INET6
++	if (r->connection->remote_addr.ss_family != AF_INET
++	||  ntIsMember(networkExcludeList, &((struct sockaddr_in *)&r->connection->remote_addr)->sin_addr)
 +	&& !ntIsMember(networkIncludeList, &((struct sockaddr_in *)&r->connection->remote_addr)->sin_addr))
++#else
+ 	if (ntIsMember(networkExcludeList, &r->connection->remote_addr.sin_addr)
+ 	&& !ntIsMember(networkIncludeList, &r->connection->remote_addr.sin_addr))
++#endif
  		return DECLINED;
  
  	/* Find last sub-request for bytes actually sent. */
