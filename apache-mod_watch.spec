@@ -15,6 +15,7 @@ Patch0:		%{name}-apr-fix.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
 BuildRequires:	apache-devel >= 2.0.52-2
+BuildRequires:	rpm-perlprov
 Requires(post,preun):	grep
 Requires(preun):	fileutils
 Requires:	apache >= 2.0.52-2
