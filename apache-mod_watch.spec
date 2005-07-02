@@ -26,7 +26,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 This module will watch and collect the bytes, requests, and documents
-in & out per virtual host, file owner, remote-ip address, directory or
+in & out per virtual host, file owner, remote IP address, directory or
 location, and the web server as a whole. This module was designed for
 use with MRTG, which will make nice graphical representations of the
 data, but is general enough that it can be applied to other purposes,
@@ -36,7 +36,7 @@ mod_vhost_alias and mod_gzip.
 %description -l pl
 Ten modu³ kontroluje i zbiera informacje na temat ilo¶ci przes³anych
 bajtów (przychodz±cych i wychodz±cych) wg. serwera wirtualnego, w³a¶ciciela
-plików, zdalnego adresu ip, katalogu lub lokacji oraz serwera jako ca³o¶ci.
+plików, zdalnego adresu IP, katalogu lub lokacji oraz serwera jako ca³o¶ci.
 Modu³ zosta³ zaprojektowany do pracy z MRTG, dziêki czemu otrzymamy ³adn±,
 graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
 
@@ -79,4 +79,4 @@ fi
 %doc CHANGES* *html *.txt Contrib nfields.pl
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_pkglibdir}/*
-%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/httpd.conf/99_mod_watch.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf/99_mod_watch.conf
