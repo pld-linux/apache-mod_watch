@@ -79,4 +79,4 @@ fi
 %doc CHANGES* *html *.txt Contrib nfields.pl
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_pkglibdir}/*
-%{_sysconfdir}/httpd.conf/99_mod_watch.conf
+%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/httpd.conf/99_mod_watch.conf
