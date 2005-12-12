@@ -35,10 +35,11 @@ mod_vhost_alias and mod_gzip.
 
 %description -l pl
 Ten modu³ kontroluje i zbiera informacje na temat ilo¶ci przes³anych
-bajtów (przychodz±cych i wychodz±cych) wg. serwera wirtualnego, w³a¶ciciela
-plików, zdalnego adresu IP, katalogu lub lokacji oraz serwera jako ca³o¶ci.
-Modu³ zosta³ zaprojektowany do pracy z MRTG, dziêki czemu otrzymamy ³adn±,
-graficzn± reprezentacje danych. Modu³ wspiera mod_vhost_alias oraz mod_gzip.
+bajtów (przychodz±cych i wychodz±cych) wg. serwera wirtualnego,
+w³a¶ciciela plików, zdalnego adresu IP, katalogu lub lokacji oraz
+serwera jako ca³o¶ci. Modu³ zosta³ zaprojektowany do pracy z MRTG,
+dziêki czemu otrzymamy ³adn±, graficzn± reprezentacje danych. Modu³
+wspiera mod_vhost_alias oraz mod_gzip.
 
 %prep
 %setup -q -n mod_%{mod_name}-4.3
