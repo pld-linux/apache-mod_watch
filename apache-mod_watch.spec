@@ -5,7 +5,7 @@ Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl):	Modu³ do apache: Interfejs do monitorowania za pomoc± MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
-Release:	4
+Release:	5
 License:	BSD
 Group:		Networking/Daemons
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
@@ -16,13 +16,12 @@ URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
 BuildRequires:	apache-devel >= 2.0.52-2
 BuildRequires:	rpm-perlprov
-Requires(post,preun):	grep
-Requires(preun):	fileutils
+Requires:	apache(modules-api) = %apache_modules_api
 Requires:	apache >= 2.0.52-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_pkglibdir	%(%{apxs} -q LIBEXECDIR)
-%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR)
+%define		_pkglibdir	%(%{apxs} -q LIBEXECDIR 2>/dev/null)
+%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR 2>/dev/null)
 
 %description
 This module will watch and collect the bytes, requests, and documents
@@ -63,13 +62,10 @@ rm -rf $RPM_BUILD_ROOT
 %post
 if [ -f /var/lock/subsys/httpd ]; then
 	/etc/rc.d/init.d/httpd restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/httpd start\" to start apache HTTP daemon."
 fi
 
 %preun
 if [ "$1" = "0" ]; then
-	umask 027
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
