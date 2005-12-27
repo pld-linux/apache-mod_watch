@@ -1,3 +1,5 @@
+# TODO
+# - package -DSTATEDIR=/var/lib/mod_watch ?
 %define		mod_name	watch
 %define 	apxs		/usr/sbin/apxs
 %include	/usr/lib/rpm/macros.perl
@@ -17,7 +19,6 @@ BuildRequires:	%{apxs}
 BuildRequires:	apache-devel >= 2.0.52-2
 BuildRequires:	rpm-perlprov
 Requires:	apache(modules-api) = %apache_modules_api
-Requires:	apache >= 2.0.52-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR 2>/dev/null)
@@ -74,6 +75,6 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc CHANGES* *html *.txt Contrib nfields.pl
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf/*_mod_%{mod_name}.conf
+%attr(755,root,root) %{_pkglibdir}/*.so
 %attr(755,root,root) %{_bindir}/*
-%attr(755,root,root) %{_pkglibdir}/*
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf/99_mod_watch.conf
