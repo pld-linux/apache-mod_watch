@@ -4,7 +4,7 @@
 %define 	apxs		/usr/sbin/apxs
 %include	/usr/lib/rpm/macros.perl
 Summary:	Apache module: Monitoring Interface for MRTG
-Summary(pl):	Modu≥ do apache: Interfejs do monitorowania za pomoc± MRTG
+Summary(pl.UTF-8):   Modu≈Ç do apache: Interfejs do monitorowania za pomocƒÖ MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
 Release:	5
@@ -34,12 +34,12 @@ data, but is general enough that it can be applied to other purposes,
 as the raw data is accessed by a URL. This module supports
 mod_vhost_alias and mod_gzip.
 
-%description -l pl
-Ten modu≥ kontroluje i zbiera informacje na temat ilo∂ci przes≥anych
-bajtÛw (przychodz±cych i wychodz±cych) wg. serwera wirtualnego,
-w≥a∂ciciela plikÛw, zdalnego adresu IP, katalogu lub lokacji oraz
-serwera jako ca≥o∂ci. Modu≥ zosta≥ zaprojektowany do pracy z MRTG,
-dziÍki czemu otrzymamy ≥adn±, graficzn± reprezentacje danych. Modu≥
+%description -l pl.UTF-8
+Ten modu≈Ç kontroluje i zbiera informacje na temat ilo≈õci przes≈Çanych
+bajt√≥w (przychodzƒÖcych i wychodzƒÖcych) wg. serwera wirtualnego,
+w≈Ça≈õciciela plik√≥w, zdalnego adresu IP, katalogu lub lokacji oraz
+serwera jako ca≈Ço≈õci. Modu≈Ç zosta≈Ç zaprojektowany do pracy z MRTG,
+dziƒôki czemu otrzymamy ≈ÇadnƒÖ, graficznƒÖ reprezentacje danych. Modu≈Ç
 wspiera mod_vhost_alias oraz mod_gzip.
 
 %prep
