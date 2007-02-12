@@ -4,7 +4,7 @@
 %define 	apxs		/usr/sbin/apxs
 %include	/usr/lib/rpm/macros.perl
 Summary:	Apache module: Monitoring Interface for MRTG
-Summary(pl.UTF-8):   Moduł do apache: Interfejs do monitorowania za pomocą MRTG
+Summary(pl.UTF-8):	Moduł do apache: Interfejs do monitorowania za pomocą MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
 Release:	5
