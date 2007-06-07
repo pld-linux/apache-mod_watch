@@ -15,7 +15,7 @@ Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr 
 Source1:	%{name}.conf
 Patch0:		%{name}-apr-fix.patch
 URL:		http://www.snert.com/Software/mod_watch/
-BuildRequires:	%{apxs}
+BuildRequires:	apache-apxs >= 2.0.52-2
 BuildRequires:	apache-devel >= 2.0.52-2
 BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
