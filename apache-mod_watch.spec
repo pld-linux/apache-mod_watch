@@ -9,7 +9,7 @@ Name:		apache-mod_%{mod_name}
 Version:	4.03
 Release:	5
 License:	BSD
-Group:		Networking/Daemons
+Group:		Networking/Daemons/HTTP
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
 # Source0-md5:	06d57713adb935f16596d22256bca913
 Source1:	%{name}.conf
