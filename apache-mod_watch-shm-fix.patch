@@ -1,0 +1,11 @@
+--- mod_watch-4.3/SharedHash.c~	2003-03-14 10:56:44.000000000 +0100
++++ mod_watch-4.3/SharedHash.c	2011-03-10 19:27:57.164192958 +0100
+@@ -99,7 +99,7 @@
+ char *
+ shVerifyString(struct shTable *tp, char *str)
+ {
+-	if ((char *) tp->shared <= str && str < (char *) tp->eshared) {
++	if ((char *) apr_shm_baseaddr_get(tp->shared) <= str && str < (char *) tp->eshared) {
+ 		if (str + strlen(str) < (char *) tp->eshared)
+ 			return str;
+ 	}
