@@ -1,0 +1,112 @@
+diff -ur mod_watch-4.3/mod_watch.c mod_watch-4.3-mutex/mod_watch.c
+--- mod_watch-4.3/mod_watch.c	2011-03-28 14:15:48.017826697 +0200
++++ mod_watch-4.3-mutex/mod_watch.c	2011-03-28 14:07:07.613894883 +0200
+@@ -1466,6 +1466,63 @@
+ }
+ 
+ /*
++ * WatchMutexMech directory
++ *
++ * Mutex mechanism to use for shared memory lock.
++ */
++static const char *
++WatchMutexMech(cmd_parms *cmd, void *dconf, const char *mech)
++{
++	if (!strcasecmp(mech, "default")) {
++		shMutexMech = APR_LOCK_DEFAULT;
++	}
++#if APR_HAS_FCNTL_SERIALIZE
++	else if (!strcasecmp(mech, "fcntl") || !strcasecmp(mech, "file")) {
++		shMutexMech = APR_LOCK_FCNTL;
++	}
++#endif
++#if APR_HAS_FLOCK_SERIALIZE
++	else if (!strcasecmp(mech, "flock") || !strcasecmp(mech, "file")) {
++		shMutexMech = APR_LOCK_FLOCK;
++	}
++#endif
++#if APR_HAS_POSIXSEM_SERIALIZE
++	else if (!strcasecmp(mech, "posixsem") || !strcasecmp(mech, "sem")) {
++		shMutexMech = APR_LOCK_POSIXSEM;
++	}
++#endif
++#if APR_HAS_PROC_PTHREAD_SERIALIZE
++	else if (!strcasecmp(mech, "pthread")) {
++		shMutexMech = APR_LOCK_PROC_PTHREAD;
++	}
++#endif
++	else {
++		return apr_pstrcat(cmd->pool, "Invalid WatchMutexMech argument ", mech,
++				" (Valid WatchMutexMech mechanisms are: default"
++#if APR_HAS_FLOCK_SERIALIZE || APR_HAS_FCNTL_SERIALIZE
++				", file"
++#endif
++#if APR_HAS_FLOCK_SERIALIZE
++				", flock"
++#endif
++#if APR_HAS_FCNTL_SERIALIZE
++				", fcntl"
++#endif
++#if APR_HAS_POSIXSEM_SERIALIZE
++				", sem"
++#endif
++#if APR_HAS_POSIXSEM_SERIALIZE
++				", posixsem"
++#endif
++#if APR_HAS_PROC_PTHREAD_SERIALIZE
++				", pthread"
++#endif
++				")", NULL);
++	}
++	return (const char *) 0;
++}
++
++/*
+  * WatchStateDirectory directory
+  *
+  * Absolute or server root relative directory where support and runtime
+@@ -1645,6 +1702,11 @@
+ 	),
+ 
+ 	AP_INIT_TAKE1(
++		"WatchMutexMech", WatchMutexMech, NULL, RSRC_CONF,
++		"Mutex mechanism to use for shared memory lock."
++	),
++
++	AP_INIT_TAKE1(
+ 		"WatchStateDirectory", WatchStateDirectory, NULL, RSRC_CONF,
+ 		"Spool directory for any support and runtime files."
+ 	),
+diff -ur mod_watch-4.3/SharedHash.c mod_watch-4.3-mutex/SharedHash.c
+--- mod_watch-4.3/SharedHash.c	2011-03-28 14:15:48.017826697 +0200
++++ mod_watch-4.3-mutex/SharedHash.c	2011-03-28 14:06:00.950400565 +0200
+@@ -95,6 +95,8 @@
+ const char shScanFormat[] = SH_SCAN_FORMAT;
+ const char shPrintFormat[] = SH_PRINT_FORMAT;
+ 
++int shMutexMech = APR_LOCK_DEFAULT;
++
+ #ifdef BOUNDARY_CHECKING
+ char *
+ shVerifyString(struct shTable *tp, char *str)
+@@ -509,7 +515,7 @@
+ 
+ 	rc = apr_global_mutex_create(
+ 		(apr_global_mutex_t **) &tp->mutex,
+-		tp->lockfile, APR_LOCK_DEFAULT, p
++		tp->lockfile, shMutexMech, p
+ 	);
+ 	if (rc != APR_SUCCESS) {
+ 		ap_log_error(
+diff -ur mod_watch-4.3/SharedHash.h mod_watch-4.3-mutex/SharedHash.h
+--- mod_watch-4.3/SharedHash.h	2003-03-14 10:12:48.000000000 +0100
++++ mod_watch-4.3-mutex/SharedHash.h	2011-03-28 14:04:55.726981348 +0200
+@@ -110,6 +110,8 @@
+ extern "C" {
+ #endif
+ 
++extern int shMutexMech;
++
+ extern const char shLockFile[];
+ extern const char shScanFormat[];
+ extern const char shPrintFormat[];
