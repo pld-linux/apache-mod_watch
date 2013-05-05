@@ -1,0 +1,114 @@
+--- mod_watch-4.3/mod_watch.c.orig	2013-05-05 22:35:43.271485347 +0200
++++ mod_watch-4.3/mod_watch.c	2013-05-05 22:36:50.621484860 +0200
+@@ -785,8 +785,8 @@
+ 	struct watchConfDir *dconf;
+ 
+ 	/* Do not count if the connection is excluded. */
+-	if (ntIsMember(networkExcludeList, r->connection->remote_addr)
+-	&& !ntIsMember(networkIncludeList, r->connection->remote_addr))
++	if (ntIsMember(networkExcludeList, r->useragent_addr)
++	&& !ntIsMember(networkIncludeList, r->useragent_addr))
+ 		return DECLINED;
+ 
+ 	if (watch_what & (WATCH_OWNER|WATCH_OWNER_BY_PORT)) {
+@@ -820,12 +820,12 @@
+ 	}
+ 
+ 	if (watch_what & WATCH_REMOTE_IP) {
+-		key = apr_psprintf(r->pool, "ip/%s", r->connection->remote_ip);
++		key = apr_psprintf(r->pool, "ip/%s", r->connection->client_ip);
+ 		watchPostReadRequestHash(r, "watch-remote-ip", key);
+ 	}
+ 
+ 	if (watch_what & WATCH_REMOTE_IP_BY_PORT) {
+-		key = apr_psprintf(r->pool, "ip/%s,%u", r->connection->remote_ip, ap_get_server_port(r));
++		key = apr_psprintf(r->pool, "ip/%s,%u", r->connection->client_ip, ap_get_server_port(r));
+ 		watchPostReadRequestHash(r, "watch-remote-ip-by-port", key);
+ 	}
+ 
+@@ -939,8 +939,8 @@
+ 	}
+ 
+ 	/* Do not count if the connection is excluded. */
+-	if (ntIsMember(networkExcludeList, r->connection->remote_addr)
+-	&& !ntIsMember(networkIncludeList, r->connection->remote_addr))
++	if (ntIsMember(networkExcludeList, r->useragent_addr)
++	&& !ntIsMember(networkIncludeList, r->useragent_addr))
+ 		return DECLINED;
+ 
+ #ifdef WATCH_OUTPUT_VERSION_3
+@@ -980,12 +980,12 @@
+ 	}
+ 
+ 	if (watch_what & WATCH_REMOTE_IP) {
+-		key = apr_psprintf(r->pool, "ip/%s", r->connection->remote_ip);
++		key = apr_psprintf(r->pool, "ip/%s", r->connection->client_ip);
+ 		watchLogHash(r, key, data);
+ 	}
+ 
+ 	if (watch_what & WATCH_REMOTE_IP_BY_PORT) {
+-		key = apr_psprintf(r->pool, "ip/%s,%u", r->connection->remote_ip, ap_get_server_port(r));
++		key = apr_psprintf(r->pool, "ip/%s,%u", r->connection->client_ip, ap_get_server_port(r));
+ 		watchLogHash(r, key, data);
+ 	}
+ 
+@@ -1345,7 +1345,7 @@
+ watchPreConfig(apr_pool_t *pconf, apr_pool_t *plog, apr_pool_t *ptemp)
+ {
+ #if defined(WHEN_APACHE_EXPLAINS_WHAT_TO_DO) && defined(__unix__)
+-	unixd_pre_config(ptemp);
++	ap_unixd_pre_config(ptemp);
+ #endif
+ 	watchDocumentsList = apr_array_make(pconf, 0, sizeof *watchDocumentsDef);
+ 	networkIncludeList = apr_array_make(pconf, 0, sizeof (apr_ipsubnet_t *));
+@@ -1401,8 +1401,8 @@
+ 	 * child processes can R/W to it later when ever they need to flush
+ 	 * or dump shared memory hash table entries to disk.
+ 	 */
+-	(void) chown(stateDirectory, unixd_config.user_id, unixd_config.group_id);
+-	(void) chown(stateDirectoryIp, unixd_config.user_id, unixd_config.group_id);
++	(void) chown(stateDirectory, ap_unixd_config.user_id, ap_unixd_config.group_id);
++	(void) chown(stateDirectoryIp, ap_unixd_config.user_id, ap_unixd_config.group_id);
+ #endif
+ 
+ 	/* Create shared memory hash table. */
+@@ -1425,7 +1425,7 @@
+ watchChildInit(apr_pool_t *p, server_rec *s)
+ {
+ #if defined(WHEN_APACHE_EXPLAINS_WHAT_TO_DO) && defined(__unix__)
+-	unixd_setup_child();
++	ap_unixd_setup_child();
+ #endif
+ 	shChildInit(shtable, p);
+ }
+--- mod_watch-4.3/SharedHash.c~	2013-05-05 22:38:31.131484131 +0200
++++ mod_watch-4.3/SharedHash.c	2013-05-05 22:38:59.641483926 +0200
+@@ -159,7 +159,7 @@
+ 		(void) fprintf(fp, "\n");
+ 		fclose(fp);
+ #if defined(__unix__)
+-		(void) chown(tp->pathname, unixd_config.user_id, unixd_config.group_id);
++		(void) chown(tp->pathname, ap_unixd_config.user_id, ap_unixd_config.group_id);
+ #endif
+ 	}
+ }
+@@ -485,8 +485,8 @@
+                 goto error1;
+         }
+ 
+-        shmbuf.shm_perm.uid = unixd_config.user_id;
+-        shmbuf.shm_perm.gid = unixd_config.group_id;
++        shmbuf.shm_perm.uid = ap_unixd_config.user_id;
++        shmbuf.shm_perm.gid = ap_unixd_config.group_id;
+         shmbuf.shm_perm.mode = 0600;
+ 
+         if (shmctl(theMem->shmid, IPC_SET, &shmbuf) != 0) {
+@@ -524,7 +524,7 @@
+ 	}
+ 
+ #if defined(__unix__)
+-	unixd_set_global_mutex_perms((apr_global_mutex_t *) tp->mutex);
++	ap_unixd_set_global_mutex_perms((apr_global_mutex_t *) tp->mutex);
+ #endif
+ 
+ 	tp->info = (struct shInfo *) MemoryAllocate(tp->memory, sizeof *tp->info);
