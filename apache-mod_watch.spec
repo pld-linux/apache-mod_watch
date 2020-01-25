@@ -2,7 +2,6 @@
 # - package -DSTATEDIR=/var/lib/mod_watch ?
 %define		mod_name	watch
 %define		apxs		/usr/sbin/apxs
-%include	/usr/lib/rpm/macros.perl
 Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl.UTF-8):	Moduł do apache: Interfejs do monitorowania za pomocą MRTG
 Name:		apache-mod_%{mod_name}
