@@ -1,3 +1,4 @@
+# DEAD upstream (site down), multiple API incompatibilities with current Apache
 # TODO
 # - package -DSTATEDIR=/var/lib/mod_watch ?
 %define		mod_name	watch
@@ -6,7 +7,7 @@ Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl.UTF-8):	Moduł do apache: Interfejs do monitorowania za pomocą MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
-Release:	10
+Release:	10.1
 License:	BSD
 Group:		Networking/Daemons/HTTP
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
