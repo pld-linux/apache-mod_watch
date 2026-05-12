@@ -1,0 +1,48 @@
+--- mod_watch-4.3/mod_watch.c.orig	2026-05-12 00:40:47.372236931 +0200
++++ mod_watch-4.3/mod_watch.c	2026-05-12 00:44:05.289765240 +0200
+@@ -70,6 +70,7 @@
+ #include "http_log.h"
+ #include "http_protocol.h"
+ #include "http_request.h"
++#include "http_connection.h"
+ 
+ #include "apr.h"
+ #include "apr_lib.h"
+@@ -187,6 +188,7 @@
+  *** Shared Memory Hash Table Routines
+  ***********************************************************************/
+ 
++#include "Memory.h"
+ #include "SharedHash.h"
+ 
+ static int shTableSize;
+@@ -1625,11 +1627,11 @@
+  * context: global
+  */
+ static const char *
+-WatchLogAll(cmd_parms *cmd, void *dconf, const char *bool)
++WatchLogAll(cmd_parms *cmd, void *dconf, const char *boolval)
+ {
+-	watch_log_all = ml_istrue(bool);
++	watch_log_all = ml_istrue(boolval);
+ 
+-	if (watch_log_all || ml_isfalse(bool))
++	if (watch_log_all || ml_isfalse(boolval))
+ 		return (const char *) 0;
+ 
+ 	return "Boolean word must be either true/false, on/off, yes/no, or 1/0";
+@@ -1655,11 +1657,11 @@
+  * context: global
+  */
+ static const char *
+-WatchDynamicVirtualHost(cmd_parms *cmd, void *dconf, const char *bool)
++WatchDynamicVirtualHost(cmd_parms *cmd, void *dconf, const char *boolval)
+ {
+-	watchDynamicVirtualHost = ml_istrue(bool);
++	watchDynamicVirtualHost = ml_istrue(boolval);
+ 
+-	if (watchDynamicVirtualHost || ml_isfalse(bool))
++	if (watchDynamicVirtualHost || ml_isfalse(boolval))
+ 		return (const char *) 0;
+ 
+ 	return "Boolean word must be either true/false, on/off, yes/no, or 1/0";

@@ -7,7 +7,7 @@ Summary:	Apache module: Monitoring Interface for MRTG
 Summary(pl.UTF-8):	Moduł do apache: Interfejs do monitorowania za pomocą MRTG
 Name:		apache-mod_%{mod_name}
 Version:	4.03
-Release:	10.1
+Release:	10.2
 License:	BSD
 Group:		Networking/Daemons/HTTP
 Source0:	http://www.snert.com/Software/download/mod_watch%(echo %{version} | tr -d .).tgz
@@ -17,6 +17,7 @@ Patch0:		%{name}-apr-fix.patch
 Patch1:		%{name}-shm-fix.patch
 Patch2:		%{name}-mutex.patch
 Patch3:		%{name}-apache24.patch
+Patch4:		%{name}-gcc15-c23.patch
 URL:		http://www.snert.com/Software/mod_watch/
 BuildRequires:	%{apxs}
 BuildRequires:	apache-devel >= 2.0.52-2
@@ -51,6 +52,7 @@ wspiera mod_vhost_alias oraz mod_gzip.
 %patch -P1 -p1
 %patch -P2 -p1
 %patch -P3 -p1
+%patch -P4 -p1
 
 %build
 %{__make} -f Makefile.dso build \
